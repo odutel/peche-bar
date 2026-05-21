@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prévisions de pêche au bar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .fishing-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .fishing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div id="app" class="max-w-6xl mx-auto px-4 py-12">
+        <header class="mb-12 text-center">
+            <h1 class="text-4xl font-black text-slate-900 mb-4 tracking-tight">Prévisions de pêche au bar</h1>
+            <p class="text-slate-500 font-medium text-sm">Données sur 10 jours extraites de maree.info et Open-Meteo</p>
+            
+            <div class="mt-8 flex flex-wrap justify-center gap-2" id="port-selector"></div>
+        </header>
+
+        <main id="forecast-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Rempli par le JavaScript -->
+        </main>
+
+        <footer class="mt-24 pt-12 border-t border-slate-200 text-center">
+            <div class="inline-block bg-white px-8 py-5 rounded-3xl shadow-sm border border-slate-100">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 text-center">Critères strictement appliqués</h3>
+                <div class="flex flex-wrap justify-center gap-8 text-xs font-bold text-slate-600">
+                    <span class="flex items-center gap-2">
+                        <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div> Coeff entre 60 et 90
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div> Marée montante (coupée au lever/coucher)
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div> Sans pluie et vent modéré (< 25 km/h)
+                    </span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const PORTS = [{"id": "110", "name": "Pénerf", "lat": 47.5, "lng": -2.62}, {"id": "108", "name": "Le Croisic", "lat": 47.29, "lng": -2.51}, {"id": "112", "name": "St Armel (Vannes)", "lat": 47.59, "lng": -2.71}, {"id": "111", "name": "Le Logeo (Port-Navalo)", "lat": 47.55, "lng": -2.81}];
+        const ALL_FORECASTS = [{"portId": "110", "date": "Jeudi 21 Mai", "start": "06h26", "end": "08h47", "coeff": 76, "wind": 16, "rain": 0.0, "weather": "Couvert", "activity": 3}, {"portId": "110", "date": "Jeudi 21 Mai", "start": "15h18", "end": "21h13", "coeff": 70, "wind": 16, "rain": 0.0, "weather": "Couvert", "activity": 3}, {"portId": "110", "date": "Vendredi 22 Mai", "start": "06h25", "end": "09h55", "coeff": 64, "wind": 20, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "110", "date": "Vendredi 22 Mai", "start": "16h17", "end": "21h48", "coeff": 59, "wind": 20, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "110", "date": "Samedi 23 Mai", "start": "06h24", "end": "11h26", "coeff": 55, "wind": 21, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "110", "date": "Dimanche 24 Mai", "start": "06h23", "end": "12h50", "coeff": 51, "wind": 24, "rain": 0.0, "weather": "Ensoleillé", "activity": 2}, {"portId": "110", "date": "Lundi 25 Mai", "start": "07h07", "end": "13h53", "coeff": 51, "wind": 22, "rain": 0.0, "weather": "Peu nuageux", "activity": 2}, {"portId": "110", "date": "Mardi 26 Mai", "start": "08h09", "end": "14h40", "coeff": 55, "wind": 22, "rain": 0.0, "weather": "Orage", "activity": 1}, {"portId": "110", "date": "Mercredi 27 Mai", "start": "09h04", "end": "15h16", "coeff": 60, "wind": 24, "rain": 0.0, "weather": "Ensoleillé", "activity": 1}, {"portId": "110", "date": "Jeudi 28 Mai", "start": "09h52", "end": "15h50", "coeff": 65, "wind": 23, "rain": 0.0, "weather": "Peu nuageux", "activity": 1}, {"portId": "110", "date": "Vendredi 29 Mai", "start": "10h36", "end": "16h24", "coeff": 68, "wind": 16, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "110", "date": "Samedi 30 Mai", "start": "11h14", "end": "16h59", "coeff": 70, "wind": 15, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "108", "date": "Jeudi 21 Mai", "start": "06h26", "end": "11h06", "coeff": 76, "wind": 18, "rain": 0.0, "weather": "Couvert", "activity": 3}, {"portId": "108", "date": "Jeudi 21 Mai", "start": "17h23", "end": "21h46", "coeff": 70, "wind": 18, "rain": 0.0, "weather": "Couvert", "activity": 3}, {"portId": "108", "date": "Vendredi 22 Mai", "start": "06h25", "end": "12h05", "coeff": 64, "wind": 17, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "108", "date": "Samedi 23 Mai", "start": "06h53", "end": "13h17", "coeff": 55, "wind": 23, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "108", "date": "Mardi 26 Mai", "start": "10h16", "end": "16h38", "coeff": 55, "wind": 21, "rain": 0.0, "weather": "Orage", "activity": 1}, {"portId": "108", "date": "Mercredi 27 Mai", "start": "11h11", "end": "17h26", "coeff": 60, "wind": 23, "rain": 0.0, "weather": "Ensoleillé", "activity": 1}, {"portId": "108", "date": "Jeudi 28 Mai", "start": "12h00", "end": "18h07", "coeff": 65, "wind": 21, "rain": 0.0, "weather": "Ensoleillé", "activity": 1}, {"portId": "108", "date": "Vendredi 29 Mai", "start": "06h19", "end": "06h24", "coeff": 67, "wind": 16, "rain": 0.0, "weather": "Couvert", "activity": 3}, {"portId": "108", "date": "Vendredi 29 Mai", "start": "12h44", "end": "18h45", "coeff": 68, "wind": 16, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "108", "date": "Samedi 30 Mai", "start": "06h18", "end": "07h01", "coeff": 70, "wind": 14, "rain": 0.0, "weather": "Couvert", "activity": 3}, {"portId": "108", "date": "Samedi 30 Mai", "start": "13h24", "end": "19h20", "coeff": 70, "wind": 14, "rain": 0.0, "weather": "Couvert", "activity": 3}, {"portId": "112", "date": "Jeudi 21 Mai", "start": "06h26", "end": "08h55", "coeff": 76, "wind": 16, "rain": 0.0, "weather": "Couvert", "activity": 3}, {"portId": "112", "date": "Jeudi 21 Mai", "start": "15h07", "end": "21h11", "coeff": 70, "wind": 16, "rain": 0.0, "weather": "Couvert", "activity": 3}, {"portId": "112", "date": "Vendredi 22 Mai", "start": "06h25", "end": "10h03", "coeff": 64, "wind": 17, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "112", "date": "Vendredi 22 Mai", "start": "16h07", "end": "21h49", "coeff": 59, "wind": 17, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "112", "date": "Samedi 23 Mai", "start": "06h24", "end": "11h28", "coeff": 55, "wind": 22, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "112", "date": "Samedi 23 Mai", "start": "17h12", "end": "21h50", "coeff": 52, "wind": 22, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "112", "date": "Dimanche 24 Mai", "start": "06h23", "end": "12h46", "coeff": 51, "wind": 23, "rain": 0.0, "weather": "Ensoleillé", "activity": 2}, {"portId": "112", "date": "Lundi 25 Mai", "start": "07h04", "end": "13h48", "coeff": 51, "wind": 23, "rain": 0.0, "weather": "Ensoleillé", "activity": 2}, {"portId": "112", "date": "Mardi 26 Mai", "start": "08h06", "end": "14h36", "coeff": 55, "wind": 17, "rain": 0.0, "weather": "Couvert", "activity": 1}, {"portId": "112", "date": "Mercredi 27 Mai", "start": "09h01", "end": "15h14", "coeff": 60, "wind": 21, "rain": 0.0, "weather": "Ensoleillé", "activity": 1}, {"portId": "112", "date": "Jeudi 28 Mai", "start": "09h48", "end": "15h49", "coeff": 65, "wind": 20, "rain": 0.0, "weather": "Ensoleillé", "activity": 1}, {"portId": "112", "date": "Vendredi 29 Mai", "start": "10h29", "end": "16h22", "coeff": 68, "wind": 15, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "112", "date": "Samedi 30 Mai", "start": "11h07", "end": "16h56", "coeff": 70, "wind": 13, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "111", "date": "Jeudi 21 Mai", "start": "06h26", "end": "09h06", "coeff": 76, "wind": 18, "rain": 0.0, "weather": "Couvert", "activity": 3}, {"portId": "111", "date": "Jeudi 21 Mai", "start": "15h21", "end": "21h29", "coeff": 70, "wind": 18, "rain": 0.0, "weather": "Couvert", "activity": 3}, {"portId": "111", "date": "Vendredi 22 Mai", "start": "06h25", "end": "10h25", "coeff": 64, "wind": 18, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "111", "date": "Vendredi 22 Mai", "start": "16h19", "end": "21h49", "coeff": 59, "wind": 18, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "111", "date": "Samedi 23 Mai", "start": "06h24", "end": "11h56", "coeff": 55, "wind": 18, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "111", "date": "Dimanche 24 Mai", "start": "06h23", "end": "13h10", "coeff": 51, "wind": 22, "rain": 0.0, "weather": "Ensoleillé", "activity": 2}, {"portId": "111", "date": "Lundi 25 Mai", "start": "07h14", "end": "14h08", "coeff": 51, "wind": 22, "rain": 0.0, "weather": "Ensoleillé", "activity": 2}, {"portId": "111", "date": "Mardi 26 Mai", "start": "08h17", "end": "14h53", "coeff": 55, "wind": 18, "rain": 0.0, "weather": "Couvert", "activity": 1}, {"portId": "111", "date": "Mercredi 27 Mai", "start": "09h13", "end": "15h28", "coeff": 60, "wind": 22, "rain": 0.0, "weather": "Ensoleillé", "activity": 1}, {"portId": "111", "date": "Jeudi 28 Mai", "start": "10h02", "end": "15h59", "coeff": 65, "wind": 20, "rain": 0.0, "weather": "Ensoleillé", "activity": 1}, {"portId": "111", "date": "Vendredi 29 Mai", "start": "10h45", "end": "16h30", "coeff": 68, "wind": 14, "rain": 0.0, "weather": "Couvert", "activity": 2}, {"portId": "111", "date": "Samedi 30 Mai", "start": "11h23", "end": "17h03", "coeff": 70, "wind": 12, "rain": 0.0, "weather": "Couvert", "activity": 2}];
+        
+        let selectedPortId = PORTS[0].id;
+
+        function renderButtons() {
+            document.getElementById('port-selector').innerHTML = PORTS.map(p => `
+                <button onclick="selectedPortId='${p.id}'; renderButtons(); renderResults();" 
+                        class="px-6 py-2.5 rounded-xl text-xs font-black transition-all uppercase tracking-widest ${selectedPortId === p.id ? 'bg-slate-900 text-white shadow-md' : 'bg-white text-slate-400 border border-slate-200 hover:border-slate-300'}">
+                    ${p.name}
+                </button>
+            `).join('');
+        }
+
+        function renderResults() {
+            const grid = document.getElementById('forecast-grid');
+            const portSlots = ALL_FORECASTS.filter(slot => slot.portId === selectedPortId);
+
+            if (portSlots.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-20 bg-white rounded-[2rem] border-2 border-dashed border-slate-100 text-slate-400 italic">Aucun créneau parfait détecté pour ce port sur les 10 prochains jours.</div>`;
+                return;
+            }
+
+            grid.innerHTML = portSlots.map(slot => `
+                <div class="fishing-card bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm flex flex-col justify-between h-full">
+                    <div>
+                        <div class="flex justify-between items-start mb-8">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${slot.date}</span>
+                            <div class="bg-slate-900 text-white text-[10px] font-black px-4 py-1.5 rounded-full shadow-lg">COEFF ${slot.coeff}</div>
+                        </div>
+                        
+                        <div class="mb-10">
+                            <h3 class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-2">Montante optimale</h3>
+                            <div class="text-3xl font-black text-slate-900">${slot.start} à ${slot.end}</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-8 border-t border-slate-50 gap-4">
+                        <div class="flex flex-col">
+                            <span class="text-[9px] font-black text-slate-400 uppercase mb-1">Vent</span>
+                            <span class="text-sm font-extrabold text-slate-700">${slot.wind} km/h</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-[9px] font-black text-slate-400 uppercase mb-1">Pluie</span>
+                            <span class="text-sm font-extrabold text-slate-700">${slot.rain} mm</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-[9px] font-black text-slate-400 uppercase mb-1">Météo</span>
+                            <span class="text-xs font-bold text-slate-600">${slot.weather}</span>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="text-[9px] font-black text-slate-400 uppercase mb-2">Activité estimée</span>
+                            <div class="flex gap-1">
+                                ${Array(3).fill(0).map((_, i) => `
+                                    <svg class="w-5 h-5 ${i < slot.activity ? 'text-blue-600' : 'text-slate-100'}" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0 1.66-2.01 3-4.5 3-1.05 0-2.01-.24-2.79-.64C13.43 15.22 11.83 16 10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.83 0 3.43.78 4.71 2.64.78-.4 1.74-.64 2.79-.64 2.49 0 4.5 1.34 4.5 3 0 .83-.5 1.58-1.32 2.12.82.54 1.32 1.29 1.32 2.12zM9.5 9a.5.5 0 100-1 .5.5 0 000 1z"/></svg>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Lancement initial
+        renderButtons();
+        renderResults();
+    </script>
+</body>
+</html>
